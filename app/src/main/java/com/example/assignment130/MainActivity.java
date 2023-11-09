@@ -390,6 +390,7 @@ public class MainActivity extends AppCompatActivity {
     public void clearOutAllFields(){
         nationalNumberInput.getText().clear();
         nameInput.getText().clear();
+        nameInput.getText().toString().toLowerCase();
 
         speciesInput.getText().clear();
         heightInput.getText().clear();
