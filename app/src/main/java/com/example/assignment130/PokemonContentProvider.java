@@ -67,7 +67,7 @@ public class PokemonContentProvider extends ContentProvider {
             COLUMN_DEF
     };
 
-    public static final String AUTHORITY = "com.example.provider";
+    public static final String AUTHORITY = "com.example.provider.pokemon";
     public static final Uri CONTENT_URI = Uri.parse(
             "content://" + AUTHORITY +"/" + TABLE_NAMESTABLE);
 

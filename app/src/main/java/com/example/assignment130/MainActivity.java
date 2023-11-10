@@ -2,6 +2,10 @@ package com.example.assignment130;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -45,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
     Button resetButton;
     Button submitButton;
 
+    Button dbButton;
+
+    Cursor mCursor;
+
+    Uri pokemonURI = PokemonContentProvider.CONTENT_URI;
+
     /**
      * This is the code that executes when the "Submit" button is clicked
      */
@@ -80,8 +90,37 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Defense does not validate: " + defenseInput.getError() + "", Toast.LENGTH_LONG).show();
             }
             else{
+                //if validates, add to DB
                 Toast.makeText(getApplicationContext(), "Successfully Added to Database", Toast.LENGTH_LONG).show();
+                ContentValues mNewValues = new ContentValues();
+
+                //put all values
+                mNewValues.put(PokemonContentProvider.COLUMN_NATIONAL_NUMBER, nationalNumberInput.getText().toString().trim());
+                mNewValues.put(PokemonContentProvider.COLUMN_NAME, nameInput.getText().toString().trim());
+                mNewValues.put(PokemonContentProvider.COLUMN_SPECIES, speciesInput.getText().toString().trim());
+
+                if(femaleButton.isChecked()){
+                    mNewValues.put(PokemonContentProvider.COLUMN_GENDER, "Female");
+                }
+                else{
+                    mNewValues.put(PokemonContentProvider.COLUMN_GENDER, "Male");
+                }
+
+                mNewValues.put(PokemonContentProvider.COLUMN_HEIGHT, heightInput.getText().toString().trim());
+                mNewValues.put(PokemonContentProvider.COLUMN_WEIGHT, weightInput.getText().toString().trim());
+                mNewValues.put(PokemonContentProvider.COLUMN_LEVEL, levelSpinner.getSelectedItem().toString());
+                mNewValues.put(PokemonContentProvider.COLUMN_HP, hpInput.getText().toString().trim());
+                mNewValues.put(PokemonContentProvider.COLUMN_ATK, attackInput.getText().toString().trim());
+                mNewValues.put(PokemonContentProvider.COLUMN_DEF, defenseInput.getText().toString().trim());
+
+
+                getContentResolver().insert(PokemonContentProvider.CONTENT_URI, mNewValues);
+
+                //update DB and clear input fields
+                mCursor = getContentResolver().query(pokemonURI, PokemonContentProvider.dbColumns, null, null, null);
+                clearOutAllFields();
             }
+
         }
     };
 
@@ -94,6 +133,17 @@ public class MainActivity extends AppCompatActivity {
 
             setAllFieldsToDefault();
 
+
+        }
+    };
+
+    View.OnClickListener dbListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            //opens DB activity
+            Intent intent = new Intent(MainActivity.this, DatabaseActivity.class);
+            startActivity(intent);
 
         }
     };
@@ -134,6 +184,8 @@ public class MainActivity extends AppCompatActivity {
         maleButton = findViewById(R.id.maleButton);
         unkButton = findViewById(R.id.unkButton);
 
+        dbButton = findViewById(R.id.dbButton);
+
         heightInput = findViewById(R.id.heightInput);
         weightInput = findViewById(R.id.weightInput);
 
@@ -159,11 +211,10 @@ public class MainActivity extends AppCompatActivity {
         submitButton.setOnClickListener(submitListener);
         resetButton.setOnClickListener(resetListener);
 
+        dbButton.setOnClickListener(dbListener);
+
         //endregion
-
         setValidationConditionsOnFields();
-
-
 
     }
 
